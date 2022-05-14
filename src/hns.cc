@@ -30,15 +30,15 @@ using json = nlohmann::json;
 // Title:      'Safari Technology Preview Release 145 –:has() and container queries'
 // HN link:     https://news.ycombinator.com/item?id=31368509
 // Story URL:   https://developer.apple.com/safari/technology-preview/release-notes/
-// Posted by:  'clairity' account since 23-01-2014. [karma: 7815]
+// Posted by:  'clarity' account since 23-01-2014. [karma: 7815]
 // Posted on:   Fri, 13 May 2022 14:57:42 GMT.
 // Exec stats: '2' displayed. '0' omitted . '17' total scanned.
 
 //////////////////////////////////////////////////////////////////////////////
 //            Application global values                                     //
 //////////////////////////////////////////////////////////////////////////////
-// set GLOBAL sleep time - time between fetching articles
-long long const SLEEP_TIME{120};
+// fetch stories frequency. '120' = 120 seconds (2 minutes)
+inline constexpr long long SLEEP_TIME{120};
 
 //////////////////////////////////////////////////////////////////////////////
 //            Application functions                                         //
@@ -83,7 +83,7 @@ int getMaxID(std::string const &base_url)
 std::string getItemByID(std::string const &base_url, int const id)
 {
     std::string site_data = getSiteJson(base_url + "/item/" + std::to_string(id) + ".json");
-    // spdlog::debug("Raw JSON for article '{}' : {}\n", id, site_data);
+    spdlog::debug("Raw JSON for article '{}' : {}\n", id, site_data);
     if (spdlog::should_log(spdlog::level::debug)) {
         if (site_data == "null") {
             spdlog::debug("** EMPTY ARTICLE DETECTED ** - only contained text is word 'null'");
@@ -148,7 +148,7 @@ int main()
     int const start_max_id = getMaxID(base_url);
     int max_id = start_max_id;
     int current_id = start_max_id;
-    int skipped_id{0};
+    int stories_skipped{0};
     int stories_found{0};
     spdlog::debug("Max ID returned: '{}'\n", start_max_id);
     if (start_max_id == -1) {
@@ -165,7 +165,7 @@ int main()
 
     while (get_next_article) {
         spdlog::debug("->> Starting infinite loop...\n");
-        spdlog::debug("START STATUS:  current {} | max {} | skipped {}\n", current_id, max_id, skipped_id);
+        spdlog::debug("START STATUS:  current {} | max {} | skipped {}\n", current_id, max_id, stories_skipped);
 
         // ensure it is worth trying to get an article:
         if (current_id > max_id) {
@@ -180,15 +180,15 @@ int main()
         }
 
         std::string const article = getItemByID(base_url, current_id);
-        // spdlog::debug("FIRST CHECK: Returned article '{}' is : {}", current_id, article);
+        spdlog::debug("Returned article '{}' is : {}", current_id, article);
 
         if (article.empty()) {
             // check if any more articles exist
             spdlog::debug("WARNING : No article returned for: {}", current_id);
             if (current_id < max_id) {
                 current_id++;
-                skipped_id++;
-                spdlog::debug("MORE TO FETCH:  current {} | max {} | skipped {}", current_id, max_id, skipped_id);
+                stories_skipped = ((current_id - start_max_id) - stories_found);
+                spdlog::debug("MORE TO FETCH:  current {} | max {} | skipped {}", current_id, max_id, stories_skipped);
                 std::cout << std::flush;
                 continue;
             }
@@ -202,15 +202,15 @@ int main()
             continue;
         }
 
-        // fmt::print("\nPRINTOUT : Article '{}' is: {}\n\n", current_id, article);
         //  check valid JSON exists
         if (json::accept(article)) {
+            spdlog::debug("Parsing JSON article...\n");
             json j = json::parse(article);
-            spdlog::debug("Parsed JSON complete\n");
 
             // "type":story **but** deleted":true  or  "dead":true  --> do not include
             if ((j.value("type", "UNKNOWN") == "story") and
                 not((j["dead"].is_boolean()) or (j["deleted"].is_boolean()))) {
+                spdlog::debug("Parsed JSON complete: VALID ARTICLE\n");
                 stories_found++;
                 auto story_date = convertEpochTime(j.value("time", 0));
                 fmt::print("    Title:      '");
@@ -222,12 +222,12 @@ int main()
                 fmt::print("    Story URL:   ");
                 fmt::print(fmt::emphasis::underline, "{}\n", j.value("url", "UNKNOWN"));
                 fmt::print("    Posted by:  '{}' at '{}'\n", j.value("by", "UNKNOWN"), story_date);
-                fmt::print("    Stats:      '{}' displayed. '{} ({})' omitted. '{}' total scanned.\n\n", stories_found,
-                           ((current_id - start_max_id) - stories_found), skipped_id, (current_id - start_max_id));
-            } else {
-                skipped_id++;
+                fmt::print("    Stats:      '{}' displayed. '{}' omitted. '{}' total scanned.\n\n", stories_found,
+                           stories_skipped, (current_id - start_max_id));
             }
+            spdlog::debug("Parsed JSON complete: NO VALID ARTICLE\n");
         }
+        stories_skipped = ((current_id - start_max_id) - stories_found);
         current_id++;
         spdlog::debug("Infinite loop restarting...\n");
     }
