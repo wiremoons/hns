@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+# macOS specific
+.DS_Store
+
+# ignore .depends file created by cmake
+.depend
+
+# ignore CMake build directory
+build/
+bin/
+
+# ignore keys file used for development reference
+keys.txt
