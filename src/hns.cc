@@ -26,7 +26,7 @@
 
 using json = nlohmann::json;
 
-// EXAMPLE STORY OUTPUT:
+// EXAMPLE STORY OUTPUT FORMAT:
 // Title:      'Safari Technology Preview Release 145 –:has() and container queries'
 // HN link:     https://news.ycombinator.com/item?id=31368509
 // Story URL:   https://developer.apple.com/safari/technology-preview/release-notes/
@@ -63,7 +63,12 @@ std::string getSiteJson(std::string const &full_url)
     return std::move(r.text);
 }
 
-// https://hacker-news.firebaseio.com/v0/maxitem.json
+/// Obtain the current 'maxitem' id on Hacker News
+/// @brief Every new post to Hacker News is assigned an ID. The 'maxitem'
+/// is therefore the last item posted and can be used to manage the apps
+/// status for retrieved articles.
+/// @return maxitem number from Hacker News or '-1' on error
+/// @code https://hacker-news.firebaseio.com/v0/maxitem.json
 int getMaxID(std::string const &base_url)
 {
     auto const site_data = getSiteJson(base_url + "/maxitem.json");
@@ -79,7 +84,10 @@ int getMaxID(std::string const &base_url)
     }
 }
 
-// https://hacker-news.firebaseio.com/v0/item/31371020.json
+/// Obtain the data for the provided item ID
+/// @brief Obtain the data associated with the item ID
+/// @return a JSON string containing the retrieved item data
+/// @code https://hacker-news.firebaseio.com/v0/item/31371020.json
 std::string getItemByID(std::string const &base_url, int const id)
 {
     std::string site_data = getSiteJson(base_url + "/item/" + std::to_string(id) + ".json");
@@ -93,7 +101,10 @@ std::string getItemByID(std::string const &base_url, int const id)
     return (site_data == "null") ? "" : std::move(site_data);
 }
 
-// set global log level for spdlog
+/// Set global log level for spdlog
+/// @brief If the application is compiled with debug enabled then also
+/// enable spdlog 'debug level' output
+/// @return no return
 void setDebugLevel()
 {
 #ifdef DEBUG
@@ -101,6 +112,9 @@ void setDebugLevel()
 #endif
 }
 
+/// Get a string with the current local time
+/// @brief Obtain the local time in 'HH:MM:SS'' format using '%T' format option.
+/// @return the current time as a string
 std::string getCurrentTime()
 {
     auto now = std::chrono::system_clock::now();
@@ -111,6 +125,10 @@ std::string getCurrentTime()
     return ss.str();
 }
 
+/// Convert the provided Epoch time to a time and data string
+/// @brief Convert a provided Epoch time into an equivalent string with
+/// the format of: 'Sat 21 May 2022 @ 08:26'
+// @return string containing the day, date and time
 std::string convertEpochTime(long const epoch_time)
 {
     if (epoch_time <= 0) {
@@ -123,6 +141,11 @@ std::string convertEpochTime(long const epoch_time)
     return ss.str();
 }
 
+/// Obtain the Curl version the application was compiled with
+/// @brief Provide the version of the Curl library that the application
+/// was compiled with, useful to check in case of security vulnerability checks
+/// are required. Example returned string is: '1.2.3'
+/// @return Applications Curl library version
 std::string getCurlVersion()
 {
     curl_version_info_data *cdinfo = curl_version_info(CURLVERSION_NOW);
