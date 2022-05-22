@@ -239,17 +239,22 @@ int main()
                 spdlog::debug("Parsed JSON complete: VALID ARTICLE\n");
                 stories_found++;
                 auto story_date = convertEpochTime(j.value("time", 0));
-                fmt::print("    Title:      '");
-                fmt::print(fg(fmt::terminal_color::blue), "{}", j.value("title", "UNKNOWN"));
-                fmt::print("'\n");
-                fmt::print("    NH Link:     ");
-                fmt::print(fmt::emphasis::underline, "https://news.ycombinator.com/item?id={}\n",
-                           std::to_string(current_id));
-                fmt::print("    Story URL:   ");
-                fmt::print(fmt::emphasis::underline, "{}\n", j.value("url", "UNKNOWN"));
-                fmt::print("    Posted by:  '{}' at '{}'\n", j.value("by", "UNKNOWN"), story_date);
-                fmt::print("    Stats:      '{:L}' displayed. '{:L}' omitted. '{:L}' total scanned.\n\n", stories_found,
-                           stories_skipped, (current_id - start_max_id));
+
+                // construct and display an output string 'story_output' with formatting
+                std::string story_output = fmt::format("    Title:      '");
+                story_output.append(fmt::format(fg(fmt::terminal_color::blue), "{}", j.value("title", "UNKNOWN")));
+                story_output.append(fmt::format("'\n"));
+                story_output.append(fmt::format("    NH Link:     "));
+                story_output.append(fmt::format(fmt::emphasis::underline, "https://news.ycombinator.com/item?id={}\n",
+                                                std::to_string(current_id)));
+                story_output.append(fmt::format("    Story URL:   "));
+                story_output.append(fmt::format(fmt::emphasis::underline, "{}\n", j.value("url", "UNKNOWN")));
+                story_output.append(
+                    fmt::format("    Posted by:  '{}' at '{}'\n", j.value("by", "UNKNOWN"), story_date));
+                story_output.append(
+                    fmt::format("    Stats:      '{:L}' displayed. '{:L}' omitted. '{:L}' total scanned.\n",
+                                stories_found, stories_skipped, (current_id - start_max_id)));
+                std::cout << story_output << std::endl;
             }
             spdlog::debug("Parsed JSON complete: NO VALID ARTICLE\n");
         }
