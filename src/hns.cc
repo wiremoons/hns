@@ -37,13 +37,16 @@ using json = nlohmann::json;
 //////////////////////////////////////////////////////////////////////////////
 //            Application global values                                     //
 //////////////////////////////////////////////////////////////////////////////
-// fetch stories frequency. '120' = 120 seconds (2 minutes)
+// Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
 inline constexpr long long SLEEP_TIME{120};
 
 //////////////////////////////////////////////////////////////////////////////
 //            Application functions                                         //
 //////////////////////////////////////////////////////////////////////////////
 
+/// Download JSON (or web page body) for the URL provided
+/// @brief Download the web site page content for the provided URL.
+/// @return The obtained web site page content as a string
 std::string getSiteJson(std::string const &full_url)
 {
     if (full_url.empty()) {
