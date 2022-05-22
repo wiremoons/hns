@@ -19,6 +19,7 @@
 #include <fmt/color.h>
 #include <fmt/format.h>
 #include <iostream>
+#include <locale>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 #include <string>
@@ -252,7 +253,8 @@ int main()
                 story_output.append(
                     fmt::format("    Posted by:  '{}' at '{}'\n", j.value("by", "UNKNOWN"), story_date));
                 story_output.append(
-                    fmt::format("    Stats:      '{:L}' displayed. '{:L}' omitted. '{:L}' total scanned.\n",
+                    fmt::format(std::locale("en_GB.UTF-8"),
+                                "    Stats:      '{:L}' displayed. '{:L}' omitted. '{:L}' total scanned.\n",
                                 stories_found, stories_skipped, (current_id - start_max_id)));
                 std::cout << story_output << std::endl;
             }
