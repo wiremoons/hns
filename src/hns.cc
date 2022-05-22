@@ -248,7 +248,7 @@ int main()
                 fmt::print("    Story URL:   ");
                 fmt::print(fmt::emphasis::underline, "{}\n", j.value("url", "UNKNOWN"));
                 fmt::print("    Posted by:  '{}' at '{}'\n", j.value("by", "UNKNOWN"), story_date);
-                fmt::print("    Stats:      '{}' displayed. '{}' omitted. '{}' total scanned.\n\n", stories_found,
+                fmt::print("    Stats:      '{:L}' displayed. '{:L}' omitted. '{:L}' total scanned.\n\n", stories_found,
                            stories_skipped, (current_id - start_max_id));
             }
             spdlog::debug("Parsed JSON complete: NO VALID ARTICLE\n");
