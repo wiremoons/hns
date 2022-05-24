@@ -15,7 +15,6 @@
 
 #include <chrono>
 #include <cpr/cpr.h>
-#include <cstddef>
 #include <fmt/color.h>
 #include <fmt/format.h>
 #include <iostream>
