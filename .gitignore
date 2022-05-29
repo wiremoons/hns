@@ -52,9 +52,8 @@ _deps
 
 # ignore CMake build directory
 build/
+build.nosync/
 bin/
-
-
 
 
 # ignore Clion settings
