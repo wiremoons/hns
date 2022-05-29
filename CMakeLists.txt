@@ -42,9 +42,15 @@ if(WIN32) # Install dlls in the same directory as the executable on Windows
 endif()
 
 # add additional compiler options (NB build fails with: '-Werror')
+# '-Qunused-arguments' is clang only option and breaks GCC builds
 # Silence 'zlib' build warnings: -Qunused-arguments
 # Silence 'curl' build warnings: -Wno-deprecated
-add_compile_options(-Wall -Wextra -pedantic -Qunused-arguments -Wno-deprecated -static)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -pedantic -Qunused-arguments -Wno-deprecated -static)
+else()
+    add_compile_options(-Wall -Wextra -pedantic -Wno-deprecated -static)
+endif()
+
 add_executable(hns ${SOURCES})
 
 set(FETCHCONTENT_UPDATES_DISCONNECTED ON CACHE BOOL "")
