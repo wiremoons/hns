@@ -37,9 +37,28 @@
 # ignore .depends file created by cmake
 .depend
 
+# normal GitHub CMake ignore
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+
 # ignore CMake build directory
 build/
 bin/
+
+
+
+
+# ignore Clion settings
+.idea/
 
 # ignore keys file used for development reference
 keys.txt
