@@ -44,14 +44,18 @@ A C++ compiler is required to build `hns`.
 
 `cmake` is recommended to perform the build. 
 
-In order to build using `cmake`, clone this repo and then run:
+If the computer the build is being performed on has `vcpkg` available, then it will be 
+used for building the library dependencies. Otherwise `cmake` will use its 
+*fecthContent* feature instead.
+
+In order to build using `vcpkg` or `cmake` directly, clone this repo and then run:
 
 ```console
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 
-The resulting program is in the `./bin/` sub-directory.
+The resulting program is in located the `./bin/` sub-directory.
 
 ## License
 
