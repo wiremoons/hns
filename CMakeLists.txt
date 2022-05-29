@@ -7,6 +7,16 @@
 #   cmake --build build
 #
 cmake_minimum_required(VERSION 3.20)
+
+# required before 'project' below - detects if 'vcpkg' is available:
+if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+  set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      CACHE STRING "")
+  set(VCPKG_LIBRARY_LINKAGE static)
+  # below needed as 'vcpkg.json' versions is experimental currently
+  set(VCPKG_FEATURE_FLAGS "versions")
+endif()
+
 project(hns)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -53,32 +63,39 @@ endif()
 
 add_executable(hns ${SOURCES})
 
-set(FETCHCONTENT_UPDATES_DISCONNECTED ON CACHE BOOL "")
-include(FetchContent)
+# Use 'vcpkg' if available
+if (DEFINED ENV{VCPKG_ROOT} AND DEFINED CMAKE_TOOLCHAIN_FILE)
+    find_package(cpr CONFIG REQUIRED)
+    find_package(fmt CONFIG REQUIRED)
+    find_package(spdlog CONFIG REQUIRED)
+    find_package(nlohmann_json CONFIG REQUIRED)
+else ()
+    set(FETCHCONTENT_UPDATES_DISCONNECTED ON CACHE BOOL "")
+    include(FetchContent)
+    FetchContent_Declare(
+        cpr
+        GIT_REPOSITORY https://github.com/libcpr/cpr.git
+        GIT_TAG 1.8.3) 
+    FetchContent_MakeAvailable(cpr)
 
-FetchContent_Declare(
-    cpr
-    GIT_REPOSITORY https://github.com/libcpr/cpr.git
-    GIT_TAG 1.8.3) 
-FetchContent_MakeAvailable(cpr)
+    FetchContent_Declare(
+      fmt
+      GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+      GIT_TAG 8.1.1)
+    FetchContent_MakeAvailable(fmt)
 
-FetchContent_Declare(
-  fmt
-  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  GIT_TAG 8.1.1)
-FetchContent_MakeAvailable(fmt)
+    FetchContent_Declare(
+        spdlog
+        GIT_REPOSITORY https://github.com/gabime/spdlog.git
+        GIT_TAG v1.10.0)
+    FetchContent_MakeAvailable(spdlog)
 
-FetchContent_Declare(
-    spdlog
-    GIT_REPOSITORY https://github.com/gabime/spdlog.git
-    GIT_TAG v1.10.0)
-FetchContent_MakeAvailable(spdlog)
-
-FetchContent_Declare(
-    json
-    URL https://github.com/nlohmann/json/releases/download/v3.10.5/json.tar.xz
-)
-FetchContent_MakeAvailable(json)
+    FetchContent_Declare(
+        json
+        URL https://github.com/nlohmann/json/releases/download/v3.10.5/json.tar.xz
+    )
+    FetchContent_MakeAvailable(json)
+endif()
 
 target_link_libraries(hns PRIVATE cpr::cpr fmt::fmt spdlog::spdlog nlohmann_json::nlohmann_json)
 
