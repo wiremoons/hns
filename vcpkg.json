@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "hns",
+  "version-string": "0.1.0",
+  "dependencies": [
+    { "name": "cpr", "version>=": "1.8.3" },
+    { "name": "fmt", "version>=": "8.1.1" },
+    { "name": "spdlog", "version>=": "1.10.0" },
+    { "name": "nlohmann-json", "version>=": "3.10.5" }
+  ],
+  "builtin-baseline": "d953973cfbfeaf8022f5219fbabb0bdf9defb706"
+}
