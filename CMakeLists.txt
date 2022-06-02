@@ -8,12 +8,12 @@
 #
 cmake_minimum_required(VERSION 3.20)
 
-# required before 'project' below - detects if 'vcpkg' is available:
+# required before 'project' below - detects and uses 'vcpkg' if available:
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
   set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
       CACHE STRING "")
   set(VCPKG_LIBRARY_LINKAGE static)
-  # below needed as 'vcpkg.json' versions is experimental currently
+  # below needed as 'vcpkg.json' versions feature is experimental currently
   set(VCPKG_FEATURE_FLAGS "versions")
 endif()
 
@@ -46,7 +46,8 @@ ENDIF()
 # add flag to hide depreciation code warnings
 #add_definitions(-DAPPROVAL_TESTS_HIDE_DEPRECATED_CODE=1)
 
-if(WIN32) # Install dlls in the same directory as the executable on Windows
+# If needed - installs dlls in the same directory as the executable on Windows
+if(WIN32)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()
