@@ -14,15 +14,16 @@
  */
 
 #include <chrono>
+#include <iostream>
+#include <locale>
+#include <string>
+#include <thread>
+
 #include <cpr/cpr.h>
 #include <fmt/color.h>
 #include <fmt/format.h>
-#include <iostream>
-#include <locale>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
-#include <string>
-#include <thread>
 
 using json = nlohmann::json;
 
@@ -166,6 +167,7 @@ int main()
     spdlog::debug("This program was built in 'debug' mode.");
 
     spdlog::debug("Curl library version: '{}'\n", getCurlVersion());
+    spdlog::debug("fmtlib version: '{}'\n", FMT_VERSION);
 
     /** Base URL for all calls to the Hacker News API */
     std::string const base_url = "https://hacker-news.firebaseio.com/v0";
