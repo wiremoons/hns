@@ -54,6 +54,7 @@ _deps
 build/
 build.nosync/
 bin/
+build
 
 
 # ignore Clion settings
