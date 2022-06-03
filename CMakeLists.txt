@@ -7,19 +7,28 @@
 #   cmake --build build
 #
 cmake_minimum_required(VERSION 3.20)
+message(STATUS "CMake version is: ${CMAKE_VERSION}")
 
 # required before 'project' below - detects and uses 'vcpkg' if available:
+message(NOTICE "Looking for 'vcpkg' install")
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+  message(STATUS "Using 'vcpkg' found at: $ENV{VCPKG_ROOT}")
   set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
       CACHE STRING "")
   set(VCPKG_LIBRARY_LINKAGE static)
+  message(STATUS "'vcpkg' static build set")
   # below needed as 'vcpkg.json' versions feature is experimental currently
   set(VCPKG_FEATURE_FLAGS "versions")
+  message(STATUS "'vcpkg' versions feature enabled")
+else ()
+  message(STATUS "'vcpkg' not found - fallback to CMake 'FetchContent'")
 endif()
 
 project(hns)
 
+# configure C++ standard to build with
 set(CMAKE_CXX_STANDARD 20)
+# generate a 'compile_commands.json' for editor support
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # add location for built binary file
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
@@ -27,10 +36,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 file(GLOB SOURCES "./src/*.cc")
 
 # cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+message(NOTICE "Checking if 'Debug' or 'Release' build requested")
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-DDEBUG=1)
     add_definitions(-DNDEBUG)
-    message("CMake build with 'DEBUG' enabled")
+    message(STATUS "CMake build as 'Debug' enabled")
+else ()
+    message(STATUS "CMake build as 'Release' enabled")
 endif()
 
 # Use static library build
