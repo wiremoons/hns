@@ -179,13 +179,13 @@ std::string const getNlohmannJsonVersion()
 std::string const getCompilerVersion()
 {
 #ifdef __clang__
-    return __clang_version__;
+    return fmt::format("clang {}", __clang_version__);
 #elif __GNUC__
-    return __VERSION__;
+    return fmt::format("GNU GCC {}", __VERSION__);
 #elif _MSC_VER
-    return = _MSC_FULL_VER;
+    return = fmt::format("Microsoft {}", _MSC_FULL_VER);
 #elif __MINGW64__
-    return = __MINGW64_VERSION_MAJOR
+    return = fmt::format("mingw64 {}", __MINGW64_VERSION_MAJOR);
 #else
     return = "UNKNOWN";
 #endif
