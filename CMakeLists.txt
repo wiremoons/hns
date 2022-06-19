@@ -90,6 +90,7 @@ if (DEFINED ENV{VCPKG_ROOT} AND DEFINED CMAKE_TOOLCHAIN_FILE)
     find_package(fmt CONFIG REQUIRED)
     find_package(spdlog CONFIG REQUIRED)
     find_package(nlohmann_json CONFIG REQUIRED)
+    find_package(argparse CONFIG REQUIRED)
 else ()
     set(FETCHCONTENT_UPDATES_DISCONNECTED ON CACHE BOOL "")
     include(FetchContent)
@@ -116,9 +117,16 @@ else ()
         URL https://github.com/nlohmann/json/releases/download/v3.10.5/json.tar.xz
     )
     FetchContent_MakeAvailable(json)
+
+    FetchContent_Declare(
+       argparse
+       GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+       GIT_TAG v2.2)
+     FetchContent_MakeAvailable(argparse)
+
 endif()
 
-target_link_libraries(hns PRIVATE cpr::cpr fmt::fmt spdlog::spdlog nlohmann_json::nlohmann_json)
+target_link_libraries(hns PRIVATE cpr::cpr fmt::fmt spdlog::spdlog nlohmann_json::nlohmann_json argparse::argparse)
 
 
 

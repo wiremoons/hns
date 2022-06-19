@@ -6,7 +6,8 @@
     { "name": "cpr", "version>=": "1.8.3" },
     { "name": "fmt", "version>=": "8.1.1" },
     { "name": "spdlog", "version>=": "1.10.0" },
-    { "name": "nlohmann-json", "version>=": "3.10.5" }
+    { "name": "nlohmann-json", "version>=": "3.10.5" },
+    { "name": "argparse", "version>=": "2.2" }
   ],
   "builtin-baseline": "b49b2bdf22559c89eddbf29a29621a1dc6929320"
 }

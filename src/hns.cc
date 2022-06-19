@@ -19,6 +19,7 @@
 #include <string>
 #include <thread>
 
+#include <argparse/argparse.hpp>
 #include <cpr/cpr.h>
 #include <fmt/color.h>
 #include <fmt/format.h>
@@ -160,11 +161,22 @@ std::string getCurlVersion()
 //            Application entry point :  main()                             //
 //////////////////////////////////////////////////////////////////////////////
 
-int main()
+int main(int argc, char *argv[])
 {
     // Set global spd::log level to 'debug' if appropriate
     setDebugLevel();
     spdlog::debug("This program was built in 'debug' mode.");
+
+    // manage an command line arguments
+    argparse::ArgumentParser program("hns");
+
+    try {
+        program.parse_args(argc, argv);
+    } catch (const std::runtime_error &err) {
+        std::cerr << err.what() << std::endl;
+        std::cerr << program;
+        std::exit(1);
+    }
 
     spdlog::debug("Curl library version: '{}'\n", getCurlVersion());
     spdlog::debug("fmtlib version: '{}'\n", FMT_VERSION);
