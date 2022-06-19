@@ -30,7 +30,13 @@ else ()
   message(STATUS "'vcpkg' not found - fallback to CMake 'FetchContent'")
 endif()
 
-project(hns)
+project(hns
+        VERSION 0.5.0 
+        DESCRIPTION "CLI app to monitor and extract the latest Hacker News stories."
+        HOMEPAGE_URL "hhttps://github.com/wiremoons/hns"
+        LANGUAGES CXX
+)
+
 
 # configure C++ standard to build with
 set(CMAKE_CXX_STANDARD 20)
