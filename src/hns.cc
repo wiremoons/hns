@@ -41,7 +41,7 @@ using json = nlohmann::json;
 //////////////////////////////////////////////////////////////////////////////
 // Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
 inline constexpr long long SLEEP_TIME{120};
-const std::string APP_VERSION{"0.5.1"};
+const std::string APP_VERSION{"0.5.2"};
 
 //////////////////////////////////////////////////////////////////////////////
 //            Application functions                                         //
@@ -152,7 +152,7 @@ std::string convertEpochTime(long const epoch_time)
 /// was compiled with, useful to check in case of security vulnerability checks
 /// are required. Example returned string is: '1.2.3'
 /// @return Applications Curl library version
-std::string getCurlVersion()
+std::string const getCurlVersion()
 {
     curl_version_info_data *cdinfo = curl_version_info(CURLVERSION_NOW);
     return cdinfo->version;
@@ -209,7 +209,7 @@ std::string const getBuildType()
 /// was compiled with, useful to check in case of security vulnerability checks
 /// are required.
 /// @return Applications version and any library versions
-std::string printVersion(std::string const APP_NAME, std::string const APP_VERSION)
+std::string const printVersion(std::string const &APP_NAME, std::string const &APP_VERSION)
 {
     std::string version_ouput = fmt::format("\n'{}' version is: '{}'\n", APP_NAME, APP_VERSION);
     version_ouput.append(fmt::format("Compiled on: '{} @ {}'.\n", __DATE__, __TIME__));
