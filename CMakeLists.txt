@@ -8,9 +8,13 @@
 #
 cmake_minimum_required(VERSION 3.20)
 message(STATUS "CMake version is: ${CMAKE_VERSION}")
+# enable debugging for a subset of find calls
+set (CMAKE_DEBUG_FIND_MODE=TRUE)
 
-# required before 'project' below - detects and uses 'vcpkg' if available:
-message(NOTICE "Looking for 'vcpkg' install")
+
+# required before 'project' below - detects and uses 'vcpkg' if available.
+# requires env: VCPKG_ROOT  to be set to 'vcpkg' install location
+message(NOTICE "++ Looking for 'vcpkg' install ++")
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
   message(STATUS "Using 'vcpkg' found at: $ENV{VCPKG_ROOT}")
   set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
@@ -20,6 +24,8 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
   # below needed as 'vcpkg.json' versions feature is experimental currently
   set(VCPKG_FEATURE_FLAGS "versions")
   message(STATUS "'vcpkg' versions feature enabled")
+elseif(DEFINED CMAKE_TOOLCHAIN_FILE)
+    message(STATUS "Existing 'vcpkg' toolchain set to: ${CMAKE_TOOLCHAIN_FILE}")
 else ()
   message(STATUS "'vcpkg' not found - fallback to CMake 'FetchContent'")
 endif()
@@ -32,11 +38,17 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # add location for built binary file
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+# If needed - installs dlls in the same directory as the executable on Windows
+if(WIN32)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+endif()
+message(NOTICE "++ Final application (binary) files are output to: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ++")
 # add list of c++ source code files to ${SOURCES}
 file(GLOB SOURCES "./src/*.cc")
 
 # cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
-message(NOTICE "Checking if 'Debug' or 'Release' build requested")
+message(NOTICE "++ Checking if 'Debug' or 'Release' build requested ++")
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-DDEBUG=1)
     add_definitions(-DNDEBUG)
@@ -55,27 +67,23 @@ IF(APPLE)
     LINK_DIRECTORIES(/usr/local/lib)
 ENDIF()
 
-# add flag to hide depreciation code warnings
-#add_definitions(-DAPPROVAL_TESTS_HIDE_DEPRECATED_CODE=1)
-
-# If needed - installs dlls in the same directory as the executable on Windows
-if(WIN32)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-endif()
-
+# set compiler build flags
+message(NOTICE "++ Checking and setting compiler build flags ++")
+add_compile_options(-Wall -Wextra -pedantic -Wno-deprecated -static)
 # add additional compiler options (NB build fails with: '-Werror')
 # '-Qunused-arguments' is clang only option and breaks GCC builds
 # Silence 'zlib' build warnings: -Qunused-arguments
 # Silence 'curl' build warnings: -Wno-deprecated
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-Wall -Wextra -pedantic -Qunused-arguments -Wno-deprecated -static)
-else()
-    add_compile_options(-Wall -Wextra -pedantic -Wno-deprecated -static)
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag(-Qunused-arguments CXX_SUPPORTS_QUNUSED-ARGUMENTS)
+if(CXX_SUPPORTS_QUNUSED-ARGUMENTS)
+    add_compile_options(-Qunused-arguments)
+    message(STATUS "Compiler '-Qunused-arguments' option flag added")
 endif()
 
 add_executable(hns ${SOURCES})
 
+message(NOTICE "++ Obtaining required supporting external libraries with 'vcpkg' or 'cmake FetchContent' ++")
 # Use 'vcpkg' if available
 if (DEFINED ENV{VCPKG_ROOT} AND DEFINED CMAKE_TOOLCHAIN_FILE)
     find_package(cpr CONFIG REQUIRED)
