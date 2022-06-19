@@ -8,5 +8,5 @@
     { "name": "spdlog", "version>=": "1.10.0" },
     { "name": "nlohmann-json", "version>=": "3.10.5" }
   ],
-  "builtin-baseline": "d953973cfbfeaf8022f5219fbabb0bdf9defb706"
+  "builtin-baseline": "b49b2bdf22559c89eddbf29a29621a1dc6929320"
 }
