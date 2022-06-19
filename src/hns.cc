@@ -1,6 +1,6 @@
 /*
  * @file hns.cc
- * @brief Hacker News Stream (HNS) obtains latest stories from Hacker News API.
+ * @brief Hacker News Stream (HNS) obtains the latest stories from the Hacker News API.
  *
  * @author Simon Rowe <simon@wiremoons.com>
  * @license open-source released under "MIT License"
@@ -41,6 +41,7 @@ using json = nlohmann::json;
 //////////////////////////////////////////////////////////////////////////////
 // Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
 inline constexpr long long SLEEP_TIME{120};
+const std::string APP_VERSION{"0.5.0"};
 
 //////////////////////////////////////////////////////////////////////////////
 //            Application functions                                         //
@@ -157,24 +158,103 @@ std::string getCurlVersion()
     return cdinfo->version;
 }
 
+/// Obtain the nlohmann_json library version the application was compiled with
+/// @brief Provide the version of the nlohmann_json library that the application
+/// was compiled with, useful to check in case of security vulnerability checks
+/// are required. Example returned string is: '1.2.3'
+/// @return Applications nlohmann_json library version
+std::string const getNlohmannJsonVersion()
+{
+    std::string const njson_ver =
+        fmt::format("{}.{}.{}", NLOHMANN_JSON_VERSION_MAJOR, NLOHMANN_JSON_VERSION_MINOR, NLOHMANN_JSON_VERSION_PATCH);
+    spdlog::debug("nlohmann_json library version: {}", njson_ver);
+    return njson_ver.empty() ? "UNKNOWN" : njson_ver;
+}
+
+/// Obtain the compiler name and version the application was compiled with
+/// @brief Provide the version of the C++ complier that the application
+/// was compiled with, useful to check in case of security vulnerability checks
+/// are required. Example returned string is: '13.1.6 (clang-1316.0.21.2.5)'
+/// @return Applications C++ compiler version
+std::string const getCompilerVersion()
+{
+#ifdef __clang__
+    return __clang_version__;
+#elif __GNUC__
+    return __VERSION__;
+#elif _MSC_VER
+    return = _MSC_FULL_VER;
+#elif __MINGW64__
+    return = __MINGW64_VERSION_MAJOR
+#else
+    return = "UNKNOWN";
+#endif
+}
+
+/// Obtain the applications build type
+/// @brief Provide the type of build the C++ complier performed for the application
+/// was compiled with. Example returned string is either : "Debug" or "Release".
+/// @return Applications C++ build type as either: "Debug" or "Release"
+std::string const getBuildType()
+{
+#if DEBUG
+    return "Debug";
+#else
+    return "Release";
+#endif
+}
+
+/// Create a version string for output by 'argparse' options: '-v' or '--version'
+/// @brief Provide the version of the program and any libraries that the application
+/// was compiled with, useful to check in case of security vulnerability checks
+/// are required.
+/// @return Applications version and any library versions
+std::string printVersion(std::string const APP_NAME, std::string const APP_VERSION)
+{
+    std::string version_ouput = fmt::format("\n'{}' version is: '{}'\n", APP_NAME, APP_VERSION);
+    version_ouput.append(fmt::format("Compiled on: '{} @ {}'.\n", __DATE__, __TIME__));
+    version_ouput.append(fmt::format("Copyright (c) 2022 Simon Rowe.\n\n"));
+    version_ouput.append(
+        fmt::format("C++ source built as '{}' using compiler '{}'.\n\n", getBuildType(), getCompilerVersion()));
+    version_ouput.append(fmt::format("Included library versions:\n"));
+    version_ouput.append(fmt::format("- cpr version: '{}'\n", CPR_VERSION));
+    version_ouput.append(fmt::format("- Curl library version: '{}'\n", getCurlVersion()));
+    version_ouput.append(fmt::format("- fmt version: '{}'\n", FMT_VERSION));
+    version_ouput.append(fmt::format("- nlohmann_json version: '{}'\n", getNlohmannJsonVersion()));
+    version_ouput.append(fmt::format("- spdlog version: '{}'\n", SPDLOG_VERSION));
+    version_ouput.append(fmt::format("\nFor licenses and further information visit:\n"
+                                     "- Hacker News Stream (hns):   https://github.com/wiremoons/hns\n"
+                                     "- argparse:                   https://github.com/p-ranav/argparse\n"
+                                     "- curl:                       https://github.com/curl/curl\n"
+                                     "- Curl for People (cpr):      https://github.com/libcpr/cpr\n"
+                                     "- fmt:                        https://github.com/fmtlib/fmt\n"
+                                     "- nlohmann_json:              https://github.com/nlohmann/json\n"
+                                     "- spdlog:                     https://github.com/gabime/spdlog\n"));
+    return version_ouput;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 //            Application entry point :  main()                             //
 //////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char *argv[])
 {
+    // get the programs runtime name
+    const std::string APP_NAME = argv[0];
+
     // Set global spd::log level to 'debug' if appropriate
     setDebugLevel();
     spdlog::debug("This program was built in 'debug' mode.");
 
     // manage an command line arguments
-    argparse::ArgumentParser program("hns");
+    argparse::ArgumentParser parser("hns", printVersion(APP_NAME, APP_VERSION));
+    parser.add_description("Hacker News Stream (HNS) obtains the latest stories from the Hacker News API.");
 
     try {
-        program.parse_args(argc, argv);
+        parser.parse_args(argc, argv);
     } catch (const std::runtime_error &err) {
         std::cerr << err.what() << std::endl;
-        std::cerr << program;
+        std::cerr << parser;
         std::exit(1);
     }
 
