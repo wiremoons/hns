@@ -38,11 +38,54 @@ Waiting for new HN stories... checking every 2 minutes
 Last check: 10:09:23
 ```
 
+Example output with run with either `-v` or `--version`:
+```console
+% hns --version
+
+'./bin/hns' version is: '0.5.0'
+Compiled on: 'Jun 19 2022 @ 12:41:15'.
+Copyright (c) 2022 Simon Rowe.
+
+C++ source built as 'Release' using compiler '13.1.6 (clang-1316.0.21.2.5)'.
+
+Included library versions:
+- cpr version: '1.8.3'
+- Curl library version: '7.83.1-DEV'
+- fmt version: '80101'
+- nlohmann_json version: '3.10.5'
+- spdlog version: '11000'
+
+For licenses and further information visit:
+- Hacker News Stream (hns):   https://github.com/wiremoons/hns
+- argparse:                   https://github.com/p-ranav/argparse
+- curl:                       https://github.com/curl/curl
+- Curl for People (cpr):      https://github.com/libcpr/cpr
+- fmt:                        https://github.com/fmtlib/fmt
+- nlohmann_json:              https://github.com/nlohmann/json
+- spdlog:                     https://github.com/gabime/spdlog
+
+```
+
+Example output with run with either `-h` or `--help`:
+```console
+% hns -h
+Usage: hns [options] 
+
+Hacker News Stream (HNS) obtains the latest stories from the Hacker News API.
+
+Optional arguments:
+-h --help       shows help message and exits
+-v --version    prints version information and exits
+
+
+```
+
 ## Build
 
 A C++ compiler is required to build `hns`. 
 
-`cmake` is recommended to perform the build. 
+- `cmake` is recommended to perform the build.
+- `vcpkg` is recommended to perform the config and package management. 
 
 If the computer the build is being performed on has `vcpkg` available, then it will be 
 used for building the library dependencies. Otherwise `cmake` will use its 
@@ -56,6 +99,26 @@ cmake --build build
 ```
 
 The resulting program is in located the `./bin/` sub-directory.
+
+To detect and use `vcpkg` the `cmake` process looks for the environment variable `VCPKG_ROOT`. Set this to the location of `vcpkg` installation. For assistance with installing `vcpkg` see: [Get started with vcpkg](https://vcpkg.io/en/getting-started.html).
+```
+# Most Unix (Linux, macOS, etc):
+export VCPKG_ROOT=~/.vcpkg
+```
+
+## Library Dependencies
+
+The following libraries are used to build `hns`. They are included statically by default, and the dependency 
+management is managed at build time either via `vcpkg` or `cmake`.
+
+- argparse: https://github.com/p-ranav/argparse
+- curl: https://github.com/curl/curl
+- Curl for People (cpr): https://github.com/libcpr/cpr
+- fmt: https://github.com/fmtlib/fmt
+- nlohmann_json: https://github.com/nlohmann/json
+- spdlog: https://github.com/gabime/spdlog
+
+Thank you to the authors of the above libraries for making them available as open source.
 
 ## License
 
