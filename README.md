@@ -1,4 +1,4 @@
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/hyperium/hyper/master/LICENSE) [![CodeQL](https://github.com/wiremoons/hns/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/wiremoons/hns/actions/workflows/codeql-analysis.yml)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/hyperium/hyper/master/LICENSE) [![CodeQL](https://github.com/wiremoons/hns/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/wiremoons/hns/actions/workflows/codeql-analysis.yml) [![hns-build](https://github.com/wiremoons/hns/actions/workflows/hns-build.yml/badge.svg)](https://github.com/wiremoons/hns/actions/workflows/hns-build.yml)
 
 # hns
 CLI app to monitor and extract the latest Hacker News stories.
