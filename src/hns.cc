@@ -28,6 +28,12 @@
 
 using json = nlohmann::json;
 
+// TODO:
+// - [ ] : detect and use system proxy settings
+// - [ ] : use co-routines for infinite loop with 2 x workers
+// - [ ] : add account info for poster
+// - [ ] : track read articles
+
 // EXAMPLE STORY OUTPUT FORMAT:
 // Title:      'Safari Technology Preview Release 145 –:has() and container queries'
 // HN link:     https://news.ycombinator.com/item?id=31368509
