@@ -9,5 +9,5 @@
     { "name": "nlohmann-json", "version>=": "3.10.5" },
     { "name": "argparse", "version>=": "2.2" }
   ],
-  "builtin-baseline": "b49b2bdf22559c89eddbf29a29621a1dc6929320"
+  "builtin-baseline": "23f346e780f343f5ec256ce997a9a871b6954d37"
 }
