@@ -42,15 +42,15 @@ Example output with run with either `-v` or `--version`:
 ```console
 % hns --version
 
-'./bin/hns' version is: '0.5.0'
-Compiled on: 'Jun 19 2022 @ 12:41:15'.
+'./hns' version is: '0.5.4'
+Compiled on: 'Jul 23 2022 @ 15:35:52'.
 Copyright (c) 2022 Simon Rowe.
 
-C++ source built as 'Release' using compiler '13.1.6 (clang-1316.0.21.2.5)'.
+C++ source built as 'Release' using compiler 'clang 13.1.6 (clang-1316.0.21.2.5)'.
 
 Included library versions:
-- cpr version: '1.8.3'
-- Curl library version: '7.83.1-DEV'
+- cpr version: '1.9.0'
+- Curl library version: '7.84.0-DEV'
 - fmt version: '80101'
 - nlohmann_json version: '3.10.5'
 - spdlog version: '11000'

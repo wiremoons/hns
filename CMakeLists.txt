@@ -31,7 +31,7 @@ else ()
 endif()
 
 project(hns
-        VERSION 0.5.3 
+        VERSION 0.5.4 
         DESCRIPTION "CLI app to monitor and extract the latest Hacker News stories."
         HOMEPAGE_URL "hhttps://github.com/wiremoons/hns"
         LANGUAGES CXX
@@ -103,7 +103,7 @@ else ()
     FetchContent_Declare(
         cpr
         GIT_REPOSITORY https://github.com/libcpr/cpr.git
-        GIT_TAG 1.8.3) 
+        GIT_TAG 1.9.0) 
     FetchContent_MakeAvailable(cpr)
 
     FetchContent_Declare(

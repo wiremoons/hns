@@ -47,7 +47,7 @@ using json = nlohmann::json;
 //////////////////////////////////////////////////////////////////////////////
 // Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
 inline constexpr long long SLEEP_TIME{120};
-const std::string APP_VERSION{"0.5.3"};
+const std::string APP_VERSION{"0.5.4"};
 
 //////////////////////////////////////////////////////////////////////////////
 //            Application functions                                         //
