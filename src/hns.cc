@@ -230,6 +230,7 @@ std::string const printVersion(std::string const &APP_NAME, std::string const &A
     version_ouput.append(fmt::format("- spdlog version: '{}'\n", SPDLOG_VERSION));
     version_ouput.append(fmt::format("\nFor licenses and further information visit:\n"
                                      "- Hacker News Stream (hns):   https://github.com/wiremoons/hns\n"
+                                     "- HackerNews API:             https://github.com/HackerNews/API\n"
                                      "- argparse:                   https://github.com/p-ranav/argparse\n"
                                      "- curl:                       https://github.com/curl/curl\n"
                                      "- Curl for People (cpr):      https://github.com/libcpr/cpr\n"
