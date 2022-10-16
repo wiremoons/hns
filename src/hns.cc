@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
     //////////////////////////////////////////////////////////////////////////////
     // Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
     constexpr long long SLEEP_TIME{120};
-    const std::string APP_VERSION{"0.5.4"};
+    const std::string APP_VERSION{"0.5.5"};
     // get the programs runtime name
     const std::string APP_NAME = argv[0];
 
