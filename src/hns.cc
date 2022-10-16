@@ -35,19 +35,13 @@ using json = nlohmann::json;
 // - [ ] : track read articles
 
 // EXAMPLE STORY OUTPUT FORMAT:
-// Title:      'Safari Technology Preview Release 145 –:has() and container queries'
+// Title:      'Safari Technology Preview Release 145'
 // HN link:     https://news.ycombinator.com/item?id=31368509
 // Story URL:   https://developer.apple.com/safari/technology-preview/release-notes/
 // Posted by:  'clarity' account since 23-01-2014. [karma: 7815]
 // Posted on:   Fri, 13 May 2022 14:57:42 GMT.
 // Exec stats: '2' displayed. '0' omitted . '17' total scanned.
 
-//////////////////////////////////////////////////////////////////////////////
-//            Application global values                                     //
-//////////////////////////////////////////////////////////////////////////////
-// Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
-inline constexpr long long SLEEP_TIME{120};
-const std::string APP_VERSION{"0.5.4"};
 
 //////////////////////////////////////////////////////////////////////////////
 //            Application functions                                         //
@@ -158,7 +152,7 @@ std::string convertEpochTime(long const epoch_time)
 /// was compiled with, useful to check in case of security vulnerability checks
 /// are required. Example returned string is: '1.2.3'
 /// @return Applications Curl library version
-std::string const getCurlVersion()
+std::string getCurlVersion()
 {
     curl_version_info_data *cdinfo = curl_version_info(CURLVERSION_NOW);
     return cdinfo->version;
@@ -169,7 +163,7 @@ std::string const getCurlVersion()
 /// was compiled with, useful to check in case of security vulnerability checks
 /// are required. Example returned string is: '1.2.3'
 /// @return Applications nlohmann_json library version
-std::string const getNlohmannJsonVersion()
+std::string getNlohmannJsonVersion()
 {
     std::string const njson_ver =
         fmt::format("{}.{}.{}", NLOHMANN_JSON_VERSION_MAJOR, NLOHMANN_JSON_VERSION_MINOR, NLOHMANN_JSON_VERSION_PATCH);
@@ -178,11 +172,11 @@ std::string const getNlohmannJsonVersion()
 }
 
 /// Obtain the compiler name and version the application was compiled with
-/// @brief Provide the version of the C++ complier that the application
+/// @brief Provide the version of the C++ compiler that the application
 /// was compiled with, useful to check in case of security vulnerability checks
 /// are required. Example returned string is: '13.1.6 (clang-1316.0.21.2.5)'
 /// @return Applications C++ compiler version
-std::string const getCompilerVersion()
+std::string getCompilerVersion()
 {
 #ifdef __clang__
     return fmt::format("clang {}", __clang_version__);
@@ -198,10 +192,10 @@ std::string const getCompilerVersion()
 }
 
 /// Obtain the applications build type
-/// @brief Provide the type of build the C++ complier performed for the application
+/// @brief Provide the type of build the C++ compiler performed for the application
 /// was compiled with. Example returned string is either : "Debug" or "Release".
 /// @return Applications C++ build type as either: "Debug" or "Release"
-std::string const getBuildType()
+std::string getBuildType()
 {
 #if DEBUG
     return "Debug";
@@ -215,20 +209,20 @@ std::string const getBuildType()
 /// was compiled with, useful to check in case of security vulnerability checks
 /// are required.
 /// @return Applications version and any library versions
-std::string const printVersion(std::string const &APP_NAME, std::string const &APP_VERSION)
+std::string printVersion(std::string const &APP_NAME, std::string const &APP_VERSION)
 {
-    std::string version_ouput = fmt::format("\n'{}' version is: '{}'\n", APP_NAME, APP_VERSION);
-    version_ouput.append(fmt::format("Compiled on: '{} @ {}'.\n", __DATE__, __TIME__));
-    version_ouput.append(fmt::format("Copyright (c) 2022 Simon Rowe.\n\n"));
-    version_ouput.append(
+    std::string version_output = fmt::format("\n'{}' version is: '{}'\n", APP_NAME, APP_VERSION);
+    version_output.append(fmt::format("Compiled on: '{} @ {}'.\n", __DATE__, __TIME__));
+    version_output.append(fmt::format("Copyright (c) 2022 Simon Rowe.\n\n"));
+    version_output.append(
         fmt::format("C++ source built as '{}' using compiler '{}'.\n\n", getBuildType(), getCompilerVersion()));
-    version_ouput.append(fmt::format("Included library versions:\n"));
-    version_ouput.append(fmt::format("- cpr version: '{}'\n", CPR_VERSION));
-    version_ouput.append(fmt::format("- Curl library version: '{}'\n", getCurlVersion()));
-    version_ouput.append(fmt::format("- fmt version: '{}'\n", FMT_VERSION));
-    version_ouput.append(fmt::format("- nlohmann_json version: '{}'\n", getNlohmannJsonVersion()));
-    version_ouput.append(fmt::format("- spdlog version: '{}'\n", SPDLOG_VERSION));
-    version_ouput.append(fmt::format("\nFor licenses and further information visit:\n"
+    version_output.append(fmt::format("Included library versions:\n"));
+    version_output.append(fmt::format("- cpr version: '{}'\n", CPR_VERSION));
+    version_output.append(fmt::format("- Curl library version: '{}'\n", getCurlVersion()));
+    version_output.append(fmt::format("- fmt version: '{}'\n", FMT_VERSION));
+    version_output.append(fmt::format("- nlohmann_json version: '{}'\n", getNlohmannJsonVersion()));
+    version_output.append(fmt::format("- spdlog version: '{}'\n", SPDLOG_VERSION));
+    version_output.append(fmt::format("\nFor licenses and further information visit:\n"
                                      "- Hacker News Stream (hns):   https://github.com/wiremoons/hns\n"
                                      "- HackerNews API:             https://github.com/HackerNews/API\n"
                                      "- argparse:                   https://github.com/p-ranav/argparse\n"
@@ -237,7 +231,7 @@ std::string const printVersion(std::string const &APP_NAME, std::string const &A
                                      "- fmt:                        https://github.com/fmtlib/fmt\n"
                                      "- nlohmann_json:              https://github.com/nlohmann/json\n"
                                      "- spdlog:                     https://github.com/gabime/spdlog\n"));
-    return version_ouput;
+    return version_output;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -246,6 +240,12 @@ std::string const printVersion(std::string const &APP_NAME, std::string const &A
 
 int main(int argc, char *argv[])
 {
+    //////////////////////////////////////////////////////////////////////////////
+    //            Application global values                                     //
+    //////////////////////////////////////////////////////////////////////////////
+    // Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
+    constexpr long long SLEEP_TIME{120};
+    const std::string APP_VERSION{"0.5.4"};
     // get the programs runtime name
     const std::string APP_NAME = argv[0];
 
@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
     setDebugLevel();
     spdlog::debug("This program was built in 'debug' mode.");
 
-    // manage an command line arguments
+    // manage any command line arguments
     argparse::ArgumentParser parser("hns", printVersion(APP_NAME, APP_VERSION));
     parser.add_description("Hacker News Stream (HNS) obtains the latest stories from the Hacker News API.");
 
