@@ -31,7 +31,7 @@ else ()
 endif()
 
 project(hns
-        VERSION 0.5.5
+        VERSION 0.5.7
         DESCRIPTION "CLI app to monitor and extract the latest Hacker News stories."
         HOMEPAGE_URL "hhttps://github.com/wiremoons/hns"
         LANGUAGES CXX

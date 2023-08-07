@@ -212,7 +212,7 @@ std::string printVersion(std::string const &APP_NAME, std::string const &APP_VER
 {
     std::string version_output = fmt::format("\n'{}' version is: '{}'\n", APP_NAME, APP_VERSION);
     version_output.append(fmt::format("Compiled on: '{} @ {}'.\n", __DATE__, __TIME__));
-    version_output.append(fmt::format("Copyright (c) 2022 Simon Rowe.\n\n"));
+    version_output.append(fmt::format("Copyright (c) 2022-2023 Simon Rowe.\n\n"));
     version_output.append(
         fmt::format("C++ source built as '{}' using compiler '{}'.\n\n", getBuildType(), getCompilerVersion()));
     version_output.append(fmt::format("Included library versions:\n"));
@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
     //////////////////////////////////////////////////////////////////////////////
     // Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
     constexpr long long SLEEP_TIME{120};
-    const std::string APP_VERSION{"0.5.6"};
+    const std::string APP_VERSION{"0.5.7"};
     // get the programs runtime name
     const std::string APP_NAME = argv[0];
 
