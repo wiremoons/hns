@@ -103,19 +103,19 @@ else ()
     FetchContent_Declare(
         cpr
         GIT_REPOSITORY https://github.com/libcpr/cpr.git
-        GIT_TAG 1.9.2)
+        GIT_TAG 1.10.2+3)
     FetchContent_MakeAvailable(cpr)
 
     FetchContent_Declare(
       fmt
       GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-      GIT_TAG 9.1.0)
+      GIT_TAG 10.0.0)
     FetchContent_MakeAvailable(fmt)
 
     FetchContent_Declare(
         spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG v1.10.0)
+        GIT_TAG v1.12.0)
     FetchContent_MakeAvailable(spdlog)
 
     FetchContent_Declare(
@@ -127,7 +127,7 @@ else ()
     FetchContent_Declare(
        argparse
        GIT_REPOSITORY https://github.com/p-ranav/argparse.git
-       GIT_TAG v2.8)
+       GIT_TAG v2.9)
      FetchContent_MakeAvailable(argparse)
 
 endif()

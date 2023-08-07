@@ -42,7 +42,6 @@ using json = nlohmann::json;
 // Posted on:   Fri, 13 May 2022 14:57:42 GMT.
 // Exec stats: '2' displayed. '0' omitted . '17' total scanned.
 
-
 //////////////////////////////////////////////////////////////////////////////
 //            Application functions                                         //
 //////////////////////////////////////////////////////////////////////////////
@@ -223,14 +222,14 @@ std::string printVersion(std::string const &APP_NAME, std::string const &APP_VER
     version_output.append(fmt::format("- nlohmann_json version: '{}'\n", getNlohmannJsonVersion()));
     version_output.append(fmt::format("- spdlog version: '{}'\n", SPDLOG_VERSION));
     version_output.append(fmt::format("\nFor licenses and further information visit:\n"
-                                     "- Hacker News Stream (hns):   https://github.com/wiremoons/hns\n"
-                                     "- HackerNews API:             https://github.com/HackerNews/API\n"
-                                     "- argparse:                   https://github.com/p-ranav/argparse\n"
-                                     "- curl:                       https://github.com/curl/curl\n"
-                                     "- Curl for People (cpr):      https://github.com/libcpr/cpr\n"
-                                     "- fmt:                        https://github.com/fmtlib/fmt\n"
-                                     "- nlohmann_json:              https://github.com/nlohmann/json\n"
-                                     "- spdlog:                     https://github.com/gabime/spdlog\n"));
+                                      "- Hacker News Stream (hns):   https://github.com/wiremoons/hns\n"
+                                      "- HackerNews API:             https://github.com/HackerNews/API\n"
+                                      "- argparse:                   https://github.com/p-ranav/argparse\n"
+                                      "- curl:                       https://github.com/curl/curl\n"
+                                      "- Curl for People (cpr):      https://github.com/libcpr/cpr\n"
+                                      "- fmt:                        https://github.com/fmtlib/fmt\n"
+                                      "- nlohmann_json:              https://github.com/nlohmann/json\n"
+                                      "- spdlog:                     https://github.com/gabime/spdlog\n"));
     return version_output;
 }
 
@@ -245,7 +244,7 @@ int main(int argc, char *argv[])
     //////////////////////////////////////////////////////////////////////////////
     // Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
     constexpr long long SLEEP_TIME{120};
-    const std::string APP_VERSION{"0.5.5"};
+    const std::string APP_VERSION{"0.5.6"};
     // get the programs runtime name
     const std::string APP_NAME = argv[0];
 
