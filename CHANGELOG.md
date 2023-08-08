@@ -1,4 +1,4 @@
-## v0.5.8
+## v0.5.8 - 08 Aug 2023
 - add `CHANGELOG.md` to project.
 - update / correct several comments for clarity.
 - add 'TODO' for application name parsing.
