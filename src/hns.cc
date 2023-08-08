@@ -34,7 +34,7 @@ using json = nlohmann::json;
 // - [ ] : add account info for poster
 // - [ ] : track read articles
 
-// EXAMPLE STORY OUTPUT FORMAT:
+// APPLICATION EXAMPLE STORY OUTPUT FORMAT:
 // Title:      'Safari Technology Preview Release 145'
 // HN link:     https://news.ycombinator.com/item?id=31368509
 // Story URL:   https://developer.apple.com/safari/technology-preview/release-notes/
@@ -102,7 +102,7 @@ std::string getItemByID(std::string const &base_url, int const id)
             spdlog::debug("** EMPTY ARTICLE DETECTED ** - only contained text is word 'null'");
         }
     }
-    // Hacker News API return the word "null" if no article exists
+    // Hacker News API returns the word "null" if no article exists for the 'id' used.
     return (site_data == "null") ? "" : std::move(site_data);
 }
 
@@ -191,8 +191,8 @@ std::string getCompilerVersion()
 }
 
 /// Obtain the applications build type
-/// @brief Provide the type of build the C++ compiler performed for the application
-/// was compiled with. Example returned string is either : "Debug" or "Release".
+/// @brief Provide the type of build the C++ compiler performed for the application.
+/// Example returned string is either : "Debug" or "Release".
 /// @return Applications C++ build type as either: "Debug" or "Release"
 std::string getBuildType()
 {
@@ -240,17 +240,23 @@ std::string printVersion(std::string const &APP_NAME, std::string const &APP_VER
 int main(int argc, char *argv[])
 {
     //////////////////////////////////////////////////////////////////////////////
-    //            Application global values                                     //
+    //            Application main value declations                              //
     //////////////////////////////////////////////////////////////////////////////
     // Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
     constexpr long long SLEEP_TIME{120};
-    const std::string APP_VERSION{"0.5.7"};
+    const std::string APP_VERSION{"0.5.8"};
     // get the programs runtime name
+    // TODO: trim `argv[0]` to be base file name only.
     const std::string APP_NAME = argv[0];
+
+    /** Base URL for all calls to the Hacker News API */
+    std::string const base_url = "https://hacker-news.firebaseio.com/v0";
 
     // Set global spd::log level to 'debug' if appropriate
     setDebugLevel();
     spdlog::debug("This program was built in 'debug' mode.");
+
+    // END main value declarations
 
     // manage any command line arguments
     argparse::ArgumentParser parser("hns", printVersion(APP_NAME, APP_VERSION));
@@ -264,19 +270,13 @@ int main(int argc, char *argv[])
         std::exit(1);
     }
 
-    spdlog::debug("Curl library version: '{}'\n", getCurlVersion());
-    spdlog::debug("fmtlib version: '{}'\n", FMT_VERSION);
-
-    /** Base URL for all calls to the Hacker News API */
-    std::string const base_url = "https://hacker-news.firebaseio.com/v0";
-
     // need HN article max id to know where to start
     int const start_max_id = getMaxID(base_url);
     int max_id = start_max_id;
     int current_id = start_max_id;
     int stories_skipped{0};
     int stories_found{0};
-    spdlog::debug("Max ID returned: '{}'\n", start_max_id);
+    spdlog::debug("Hackernews story 'Max ID': '{}'\n", start_max_id);
     if (start_max_id == -1) {
         fmt::print(stderr, fg(fmt::terminal_color::red), "ERROR: failed to obtain HN Max ID. Exit.");
         return EXIT_FAILURE;
