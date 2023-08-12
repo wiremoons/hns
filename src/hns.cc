@@ -42,10 +42,6 @@ using json = nlohmann::json;
 // Posted on:   Fri, 13 May 2022 14:57:42 GMT.
 // Exec stats: '2' displayed. '0' omitted . '17' total scanned.
 
-//////////////////////////////////////////////////////////////////////////////
-//            Application functions                                         //
-//////////////////////////////////////////////////////////////////////////////
-
 /// Download JSON (or web page body) for the URL provided
 /// @brief Download the web site page content for the provided URL.
 /// @return The obtained web site page content as a string
@@ -65,7 +61,7 @@ std::string getSiteJson(std::string const &full_url)
             spdlog::debug("  {} : {}", kv.first, kv.second);
         }
     }
-    return std::move(r.text);
+    return r.text;
 }
 
 /// Obtain the current 'maxitem' id on Hacker News
@@ -103,7 +99,7 @@ std::string getItemByID(std::string const &base_url, int const id)
         }
     }
     // Hacker News API returns the word "null" if no article exists for the 'id' used.
-    return (site_data == "null") ? "" : std::move(site_data);
+    return (site_data == "null") ? "" : site_data;
 }
 
 /// Set global log level for spdlog
@@ -233,32 +229,20 @@ std::string printVersion(std::string const &APP_NAME, std::string const &APP_VER
     return version_output;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//            Application entry point :  main()                             //
-//////////////////////////////////////////////////////////////////////////////
-
 int main(int argc, char *argv[])
 {
-    //////////////////////////////////////////////////////////////////////////////
-    //            Application main value declations                              //
-    //////////////////////////////////////////////////////////////////////////////
     // Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
     constexpr long long SLEEP_TIME{120};
-    const std::string APP_VERSION{"0.5.8"};
-    // get the programs runtime name
+    const std::string APP_VERSION{"0.5.9"};
     // TODO: trim `argv[0]` to be base file name only.
     const std::string APP_NAME = argv[0];
 
-    /** Base URL for all calls to the Hacker News API */
     std::string const base_url = "https://hacker-news.firebaseio.com/v0";
 
     // Set global spd::log level to 'debug' if appropriate
     setDebugLevel();
     spdlog::debug("This program was built in 'debug' mode.");
 
-    // END main value declarations
-
-    // manage any command line arguments
     argparse::ArgumentParser parser("hns", printVersion(APP_NAME, APP_VERSION));
     parser.add_description("Hacker News Stream (HNS) obtains the latest stories from the Hacker News API.");
 
@@ -270,7 +254,6 @@ int main(int argc, char *argv[])
         std::exit(1);
     }
 
-    // need HN article max id to know where to start
     int const start_max_id = getMaxID(base_url);
     int max_id = start_max_id;
     int current_id = start_max_id;

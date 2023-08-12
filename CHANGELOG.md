@@ -1,3 +1,8 @@
+## v0.5.9 - 09 Aug 2023
+- Fix typo in application Github repo url in 'project' section of `CMakeLists.txt`.
+- remove the use of `std::move()` for function returns as they are not required as explicit statements.
+- remove any comments that state the obvious based on the source code they were supporting.
+
 ## v0.5.8 - 08 Aug 2023
 - add `CHANGELOG.md` to project.
 - update / correct several comments for clarity.
