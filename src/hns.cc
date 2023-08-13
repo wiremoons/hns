@@ -233,7 +233,7 @@ int main(int argc, char *argv[])
 {
     // Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
     constexpr long long SLEEP_TIME{120};
-    const std::string APP_VERSION{"0.5.9"};
+    const std::string APP_VERSION{"0.5.10"};
     // TODO: trim `argv[0]` to be base file name only.
     const std::string APP_NAME = argv[0];
 

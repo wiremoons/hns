@@ -1,3 +1,6 @@
+## v0.5.10 - 12 Aug 2023
+- Remove use of CMake `fetchContent` fall back to simplify - only use `vcpkg` instead.
+
 ## v0.5.9 - 09 Aug 2023
 - Fix typo in application Github repo url in 'project' section of `CMakeLists.txt`.
 - remove the use of `std::move()` for function returns as they are not required as explicit statements.

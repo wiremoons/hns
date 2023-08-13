@@ -12,7 +12,7 @@ message(STATUS "CMake version is: ${CMAKE_VERSION}")
 set (CMAKE_DEBUG_FIND_MODE=TRUE)
 
 
-# required before 'project' below - detects and uses 'vcpkg' if available.
+# required before 'project' below - detects and uses 'vcpkg' - exit it not found.
 # requires env: VCPKG_ROOT  to be set to 'vcpkg' install location
 message(NOTICE "++ Looking for 'vcpkg' install ++")
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -27,11 +27,11 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 elseif(DEFINED CMAKE_TOOLCHAIN_FILE)
     message(STATUS "Existing 'vcpkg' toolchain set to: ${CMAKE_TOOLCHAIN_FILE}")
 else ()
-  message(STATUS "'vcpkg' not found - fallback to CMake 'FetchContent'")
+  message(FATAL_ERROR "[!] ABORT BUILD: 'vcpkg' not found.\n  [i] For 'vcpkg' install help: https://vcpkg.io/en/getting-started")
 endif()
 
 project(hns
-        VERSION 0.5.9
+        VERSION 0.5.10
         DESCRIPTION "CLI app to monitor and extract the latest Hacker News stories."
         HOMEPAGE_URL "https://github.com/wiremoons/hns"
         LANGUAGES CXX
@@ -89,7 +89,7 @@ endif()
 
 add_executable(hns ${SOURCES})
 
-message(NOTICE "++ Obtaining required supporting external libraries with 'vcpkg' or 'cmake FetchContent' ++")
+message(NOTICE "++ Obtaining required supporting external libraries with 'vcpkg' ++")
 # Use 'vcpkg' if available
 if (DEFINED ENV{VCPKG_ROOT} AND DEFINED CMAKE_TOOLCHAIN_FILE)
     find_package(cpr CONFIG REQUIRED)
@@ -97,39 +97,6 @@ if (DEFINED ENV{VCPKG_ROOT} AND DEFINED CMAKE_TOOLCHAIN_FILE)
     find_package(spdlog CONFIG REQUIRED)
     find_package(nlohmann_json CONFIG REQUIRED)
     find_package(argparse CONFIG REQUIRED)
-else ()
-    set(FETCHCONTENT_UPDATES_DISCONNECTED ON CACHE BOOL "")
-    include(FetchContent)
-    FetchContent_Declare(
-        cpr
-        GIT_REPOSITORY https://github.com/libcpr/cpr.git
-        GIT_TAG 1.10.2+3)
-    FetchContent_MakeAvailable(cpr)
-
-    FetchContent_Declare(
-      fmt
-      GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-      GIT_TAG 10.0.0)
-    FetchContent_MakeAvailable(fmt)
-
-    FetchContent_Declare(
-        spdlog
-        GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG v1.12.0)
-    FetchContent_MakeAvailable(spdlog)
-
-    FetchContent_Declare(
-        json
-        URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz
-    )
-    FetchContent_MakeAvailable(json)
-
-    FetchContent_Declare(
-       argparse
-       GIT_REPOSITORY https://github.com/p-ranav/argparse.git
-       GIT_TAG v2.9)
-     FetchContent_MakeAvailable(argparse)
-
 endif()
 
 target_link_libraries(hns PRIVATE cpr::cpr fmt::fmt spdlog::spdlog nlohmann_json::nlohmann_json argparse::argparse)
