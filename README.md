@@ -106,6 +106,14 @@ To detect and use `vcpkg` the `cmake` process looks for the environment variable
 export VCPKG_ROOT=~/.vcpkg
 ```
 
+### Fedora Asahi - Build Issue
+
+When excuting the build as decribed above on *Fedora Asahi* for *aarch64* the `vcpkg` build fails on the *OpenSSL* library. To fix it addtional *Perl* modules are needed, that can be installed with the command:
+
+```
+sudo dnf install perl-IPC-Cmd perl-FindBin
+```
+
 ## Library Dependencies
 
 The following libraries are used to build `hns`. They are included statically by default, and the dependency 
