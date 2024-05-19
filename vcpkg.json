@@ -1,13 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
   "name": "hns",
-  "version-string": "0.5.10",
+  "version-string": "0.5.11",
   "dependencies": [
-    { "name": "cpr", "version>=": "1.10.2+3" },
-    { "name": "fmt", "version>=": "10.0.0" },
-    { "name": "spdlog", "version>=": "1.12.0" },
-    { "name": "nlohmann-json", "version>=": "3.11.2" },
-    { "name": "argparse", "version>=": "2.9" }
+    { "name": "cpr", "version>=": "1.10.5" },
+    { "name": "fmt", "version>=": "10.2.1" },
+    { "name": "spdlog", "version>=": "1.14.1" },
+    { "name": "nlohmann-json", "version>=": "3.11.3" },
+    { "name": "argparse", "version>=": "3.0" }
   ],
-  "builtin-baseline": "a109b7ccb27f0b90871c560647bbbc7ecd3da127"
+  "builtin-baseline": "b3c870d4f79febf73775295775d388168a7b72f7"
 }

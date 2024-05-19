@@ -16,6 +16,7 @@
 #include <chrono>
 #include <iostream>
 #include <locale>
+#include <optional>
 #include <string>
 #include <thread>
 
@@ -44,7 +45,7 @@ using json = nlohmann::json;
 
 /// Download JSON (or web page body) for the URL provided
 /// @brief Download the web site page content for the provided URL.
-/// @return The obtained web site page content as a string
+/// @return The obtained web site page content as a string or empty string if not found.
 std::string getSiteJson(std::string const &full_url)
 {
     if (full_url.empty()) {
@@ -68,26 +69,26 @@ std::string getSiteJson(std::string const &full_url)
 /// @brief Every new post to Hacker News is assigned an ID. The 'maxitem'
 /// is therefore the last item posted and can be used to manage the apps
 /// status for retrieved articles.
-/// @return maxitem number from Hacker News or '-1' on error
+/// @return uses `std::optional` for `int` return.
 /// @code https://hacker-news.firebaseio.com/v0/maxitem.json
-int getMaxID(std::string const &base_url)
+std::optional<int> getMaxID(std::string const &base_url)
 {
     auto const site_data = getSiteJson(base_url + "/maxitem.json");
     if (site_data.empty()) {
-        return -1;
+        return std::nullopt;
     }
     spdlog::debug("Raw JSON max ID is: '{}'", site_data);
     try {
         return std::stoi(site_data);
     } catch (std::exception &e) {
         fmt::print(stderr, "ERROR: failed to convert maxID '{}' due to exception: '{}'\n", site_data, e.what());
-        return -1;
+        return std::nullopt;
     }
 }
 
 /// Obtain the data for the provided item ID
 /// @brief Obtain the data associated with the item ID
-/// @return a JSON string containing the retrieved item data
+/// @return a JSON string containing the retrieved item data or empty string of not found.
 /// @code https://hacker-news.firebaseio.com/v0/item/31371020.json
 std::string getItemByID(std::string const &base_url, int const id)
 {
@@ -95,7 +96,7 @@ std::string getItemByID(std::string const &base_url, int const id)
     spdlog::debug("Raw JSON for article '{}' : {}\n", id, site_data);
     if (spdlog::should_log(spdlog::level::debug)) {
         if (site_data == "null") {
-            spdlog::debug("** EMPTY ARTICLE DETECTED ** - only contained text is word 'null'");
+            spdlog::debug("** EMPTY ARTICLE DETECTED ** - only contained text is the word 'null'");
         }
     }
     // Hacker News API returns the word "null" if no article exists for the 'id' used.
@@ -157,7 +158,7 @@ std::string getCurlVersion()
 /// @brief Provide the version of the nlohmann_json library that the application
 /// was compiled with, useful to check in case of security vulnerability checks
 /// are required. Example returned string is: '1.2.3'
-/// @return Applications nlohmann_json library version
+/// @return Applications nlohmann_json library version or word "UNKNOWN".
 std::string getNlohmannJsonVersion()
 {
     std::string const njson_ver =
@@ -170,7 +171,7 @@ std::string getNlohmannJsonVersion()
 /// @brief Provide the version of the C++ compiler that the application
 /// was compiled with, useful to check in case of security vulnerability checks
 /// are required. Example returned string is: '13.1.6 (clang-1316.0.21.2.5)'
-/// @return Applications C++ compiler version
+/// @return Applications C++ compiler version or "UNKNONW".
 std::string getCompilerVersion()
 {
 #ifdef __clang__
@@ -203,12 +204,12 @@ std::string getBuildType()
 /// @brief Provide the version of the program and any libraries that the application
 /// was compiled with, useful to check in case of security vulnerability checks
 /// are required.
-/// @return Applications version and any library versions
+/// @return Applications version and any library versions.
 std::string printVersion(std::string const &APP_NAME, std::string const &APP_VERSION)
 {
     std::string version_output = fmt::format("\n'{}' version is: '{}'\n", APP_NAME, APP_VERSION);
     version_output.append(fmt::format("Compiled on: '{} @ {}'.\n", __DATE__, __TIME__));
-    version_output.append(fmt::format("Copyright (c) 2022-2023 Simon Rowe.\n\n"));
+    version_output.append(fmt::format("Copyright (c) 2022-2024 Simon Rowe.\n\n"));
     version_output.append(
         fmt::format("C++ source built as '{}' using compiler '{}'.\n\n", getBuildType(), getCompilerVersion()));
     version_output.append(fmt::format("Included library versions:\n"));
@@ -233,7 +234,7 @@ int main(int argc, char *argv[])
 {
     // Fetch stories frequency. Every: '120' = 120 seconds (2 minutes)
     constexpr long long SLEEP_TIME{120};
-    const std::string APP_VERSION{"0.5.10"};
+    const std::string APP_VERSION{"0.5.11"};
     // TODO: trim `argv[0]` to be base file name only.
     const std::string APP_NAME = argv[0];
 
@@ -254,16 +255,19 @@ int main(int argc, char *argv[])
         std::exit(1);
     }
 
-    int const start_max_id = getMaxID(base_url);
+    auto const initial_max_id = getMaxID(base_url);
+    spdlog::debug("Hackernews story 'Max ID': '{}'\n", initial_max_id.value());
+    if (!initial_max_id.has_value()) {
+        fmt::print(stderr, fg(fmt::terminal_color::red), "ERROR: failed to obtain HN maximum article ID. Exit.");
+        return EXIT_FAILURE;
+    }
+
+    // Values tracked through program lifetime for *stats* output
+    int const start_max_id = initial_max_id.value();
     int max_id = start_max_id;
     int current_id = start_max_id;
     int stories_skipped{0};
     int stories_found{0};
-    spdlog::debug("Hackernews story 'Max ID': '{}'\n", start_max_id);
-    if (start_max_id == -1) {
-        fmt::print(stderr, fg(fmt::terminal_color::red), "ERROR: failed to obtain HN Max ID. Exit.");
-        return EXIT_FAILURE;
-    }
 
     fmt::print(fg(fmt::terminal_color::green), "\nStarting Hacker News Stream (hns)...\n");
     fmt::print("Starting article ID: ");
@@ -279,12 +283,18 @@ int main(int argc, char *argv[])
         // ensure it is worth trying to get an article:
         if (current_id > max_id) {
             spdlog::debug("NO ARTICLE AVAILABLE:  current {} is greater than max {}\n", current_id, max_id);
-            fmt::print("Last check: {}", getCurrentTime());
+            fmt::print("Scanned: '{:L}'. Last check: {}", (current_id - start_max_id), getCurrentTime());
             std::cout << std::flush;
             std::this_thread::sleep_for(std::chrono::seconds(SLEEP_TIME));
-            fmt::print("{}", "\r                    \r");
+            fmt::print("{}", "\r                                                        \r");
             std::cout << std::flush;
-            max_id = getMaxID(base_url);
+            auto maybe_max_id = getMaxID(base_url);
+            if (!maybe_max_id.has_value()) {
+                spdlog::debug("FATAL ERROR: maximum article number not found from HN web site\n");
+                fmt::print(stderr, fg(fmt::terminal_color::red), "ERROR: failed to obtain HN Max ID. Exit.");
+                return EXIT_FAILURE;
+            }
+            max_id = maybe_max_id.value();
             continue;
         }
 
@@ -307,7 +317,13 @@ int main(int argc, char *argv[])
             std::this_thread::sleep_for(std::chrono::seconds(SLEEP_TIME));
             fmt::print("{}", "\r                    \r");
             std::cout << std::flush;
-            max_id = getMaxID(base_url);
+            auto maybe_max_id = getMaxID(base_url);
+            if (!maybe_max_id.has_value()) {
+                spdlog::debug("FATAL ERROR: maximum article number not found from HN web site\n");
+                fmt::print(stderr, fg(fmt::terminal_color::red), "ERROR: failed to obtain HN Max ID. Exit.");
+                return EXIT_FAILURE;
+            }
+            max_id = maybe_max_id.value();
             continue;
         }
 
@@ -334,10 +350,11 @@ int main(int argc, char *argv[])
                 story_output.append(fmt::format(fmt::emphasis::underline, "{}\n", j.value("url", "UNKNOWN")));
                 story_output.append(
                     fmt::format("    Posted by:  '{}' at '{}'\n", j.value("by", "UNKNOWN"), story_date));
-                story_output.append(
-                    fmt::format(std::locale("en_GB.UTF-8"),
-                                "    Stats:      '{:L}' displayed. '{:L}' omitted. '{:L}' total scanned.\n",
-                                stories_found, stories_skipped, (current_id - start_max_id)));
+                story_output.append(fmt::format(std::locale("en_GB.UTF-8"),
+                                                "    Stats:      '{:L}' displayed. '{:L}' omitted. '{:L}' checked. "
+                                                "'{:L}' remaining.\n",
+                                                stories_found, stories_skipped, (current_id - start_max_id),
+                                                (max_id - current_id)));
                 std::cout << story_output << std::endl;
             }
             spdlog::debug("Parsed JSON complete: NO VALID ARTICLE\n");
